@@ -62,3 +62,11 @@ sudo systemctl enable fail2ban
 sudo systemctl restart fail2ban
 
 echo "Hardened VPS setup complete."
+
+cd /home/ubuntu/
+git clone https://github.com/codebyamrit/vps-infra.git
+cd vps-infra
+mkdir -p secrets
+
+echo "CF_TOKEN_FOR_AMRIT_DOMAIN" > secrets/cf_main_token
+echo "CF_TOKEN_FOR_STREAM_DOMAIN" > secrets/cf_stream_token

@@ -5,21 +5,57 @@ services:
     restart: unless-stopped
 
     command:
+      # Docker
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--providers.docker.network=proxy"
+
+      # EntryPoints
       - "--entrypoints.web.address=:80"
-      - "--entrypoints.web.forwardedHeaders.trustedIPs=173.245.48.0/20,103.21.244.0/22,103.22.200.0/22,103.31.4.0/22,141.101.64.0/18,108.162.192.0/18,190.93.240.0/20,188.114.96.0/20,197.234.240.0/22,198.41.128.0/17,162.158.0.0/15,104.16.0.0/13,104.24.0.0/14,172.64.0.0/13,131.0.72.0/22,2400:cb00::/32,2606:4700::/32,2803:f800::/32,2405:b500::/32,2405:8100::/32,2a06:98c0::/29,2c0f:f248::/32"
-      - "--api.dashboard=true"
-      - "--api.insecure=false"
+      - "--entrypoints.websecure.address=:443"
+
+      # Redirect HTTP → HTTPS
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+
+      # Cloudflare Resolver 1 (amritsharma.dev)
+      - "--certificatesresolvers.cf-main.acme.dnschallenge=true"
+      - "--certificatesresolvers.cf-main.acme.dnschallenge.provider=cloudflare"
+      - "--certificatesresolvers.cf-main.acme.email=me.sharma.amrit@gmail.com"
+      - "--certificatesresolvers.cf-main.acme.storage=/letsencrypt/cf-main.json"
+
+      # Cloudflare Resolver 2 (cctvcameralive.in)
+      - "--certificatesresolvers.cf-stream.acme.dnschallenge=true"
+      - "--certificatesresolvers.cf-stream.acme.dnschallenge.provider=cloudflare"
+      - "--certificatesresolvers.cf-stream.acme.email=netwonteam@gmail.com"
+      - "--certificatesresolvers.cf-stream.acme.storage=/letsencrypt/cf-stream.json"
+
+      # Logs
       - "--log.level=INFO"
       - "--accesslog=true"
+
+      # Dashboard
+      - "--api.dashboard=true"
+      - "--api.insecure=false"
 
     ports:
       - "80:80"
       - "443:443"
+
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./letsencrypt:/letsencrypt"
+
+    secrets:
+      - cf_main_token
+      - cf_stream_token
+
+    environment:
+      # Resolver 1
+      - CF_DNS_API_TOKEN_FILE=/run/secrets/cf_main_token
+
+      # ⚠️ Trick: second resolver uses same env var name internally,
+      # so we duplicate container using file swap (explained below)
 
     security_opt:
       - no-new-privileges:true
@@ -30,13 +66,18 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik.amritsharma.dev`)"
-      - "traefik.http.routers.traefik-dashboard.entrypoints=web"
+      - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
       - "traefik.http.routers.traefik-dashboard.service=api@internal"
-      - "traefik.http.routers.traefik-dashboard.tls=false"
+      - "traefik.http.routers.traefik-dashboard.tls.certresolver=cf-main"
       - "traefik.http.routers.traefik-dashboard.middlewares=auth"
       - "traefik.http.middlewares.auth.basicauth.users=admin:$$2y$$05$$vR2i9C8q1D56j7c1/sMv4evT/B3Y4176O8Z5rGv2M/D9aKzFwXQY6"
 
+secrets:
+  cf_main_token:
+    file: ./secrets/cf_main_token
+  cf_stream_token:
+    file: ./secrets/cf_stream_token
+
 networks:
   proxy:
-    name: proxy
     external: true
