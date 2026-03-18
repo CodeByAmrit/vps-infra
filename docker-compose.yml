@@ -13,6 +13,7 @@ services:
       # EntryPoints
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.websecure.http3=true"
 
       # Redirect HTTP → HTTPS
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
@@ -35,6 +36,7 @@ services:
     ports:
       - "80:80"
       - "443:443"
+      - "443:443/udp"
 
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"

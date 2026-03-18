@@ -23,6 +23,7 @@ sudo ufw default deny incoming
 sudo ufw default allow outgoing
 
 sudo ufw allow OpenSSH
+ufw allow 443/udp
 
 # Allow Cloudflare IP ranges for HTTP/HTTPS
 echo "Fetching Cloudflare IP ranges..."
