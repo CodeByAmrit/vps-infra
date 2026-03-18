@@ -18,17 +18,11 @@ services:
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
 
-      # Cloudflare Resolver 1 (amritsharma.dev)
-      - "--certificatesresolvers.cf-main.acme.dnschallenge=true"
-      - "--certificatesresolvers.cf-main.acme.dnschallenge.provider=cloudflare"
-      - "--certificatesresolvers.cf-main.acme.email=me.sharma.amrit@gmail.com"
-      - "--certificatesresolvers.cf-main.acme.storage=/letsencrypt/cf-main.json"
-
-      # Cloudflare Resolver 2 (cctvcameralive.in)
-      - "--certificatesresolvers.cf-stream.acme.dnschallenge=true"
-      - "--certificatesresolvers.cf-stream.acme.dnschallenge.provider=cloudflare"
-      - "--certificatesresolvers.cf-stream.acme.email=netwonteam@gmail.com"
-      - "--certificatesresolvers.cf-stream.acme.storage=/letsencrypt/cf-stream.json"
+      # Let's Encrypt (HTTP challenge)
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.letsencrypt.acme.email=your@email.com"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
 
       # Logs
       - "--log.level=INFO"
@@ -46,17 +40,6 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./letsencrypt:/letsencrypt"
 
-    secrets:
-      - cf_main_token
-      - cf_stream_token
-
-    environment:
-      # Resolver 1
-      - CF_DNS_API_TOKEN_FILE=/run/secrets/cf_main_token
-
-      # ⚠️ Trick: second resolver uses same env var name internally,
-      # so we duplicate container using file swap (explained below)
-
     security_opt:
       - no-new-privileges:true
 
@@ -65,18 +48,16 @@ services:
 
     labels:
       - "traefik.enable=true"
+
+      # Dashboard
       - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik.amritsharma.dev`)"
       - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
       - "traefik.http.routers.traefik-dashboard.service=api@internal"
-      - "traefik.http.routers.traefik-dashboard.tls.certresolver=cf-main"
+      - "traefik.http.routers.traefik-dashboard.tls.certresolver=letsencrypt"
       - "traefik.http.routers.traefik-dashboard.middlewares=auth"
-      - "traefik.http.middlewares.auth.basicauth.users=admin:$$2y$$05$$vR2i9C8q1D56j7c1/sMv4evT/B3Y4176O8Z5rGv2M/D9aKzFwXQY6"
 
-secrets:
-  cf_main_token:
-    file: ./secrets/cf_main_token
-  cf_stream_token:
-    file: ./secrets/cf_stream_token
+      # Basic Auth
+      - "traefik.http.middlewares.auth.basicauth.users=admin:$$2y$$05$$vR2i9C8q1D56j7c1/sMv4evT/B3Y4176O8Z5rGv2M/D9aKzFwXQY6"
 
 networks:
   proxy:
