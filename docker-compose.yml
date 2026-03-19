@@ -59,7 +59,7 @@ services:
       - "traefik.http.routers.traefik-dashboard.middlewares=auth"
 
       # Basic Auth
-      - "traefik.http.middlewares.auth.basicauth.users=admin:$$2y$$05$$vR2i9C8q1D56j7c1/sMv4evT/B3Y4176O8Z5rGv2M/D9aKzFwXQY6"
+      - "traefik.http.middlewares.auth.basicauth.users=admin:$2b$10$3VOxAUjOOO.9K2kRuOsYD.0CjqnMI/HBzwrSi440FgjKc6G2nGIPu"
 
 networks:
   proxy:
