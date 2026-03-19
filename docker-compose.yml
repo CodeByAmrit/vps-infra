@@ -45,7 +45,7 @@ services:
       # Logs
       # -----------------------
       - "--log.level=INFO"
-      - "--accesslog=true"
+      - "--accesslog=false"
       - "--accesslog.format=json"
       - "--accesslog.fields.defaultmode=keep"
 
@@ -86,6 +86,11 @@ services:
 
     security_opt:
       - no-new-privileges:true
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
     ulimits:
       nofile:
@@ -108,7 +113,7 @@ services:
       - "traefik.http.routers.traefik-dashboard.middlewares=auth"
 
       # Basic Auth
-      - "traefik.http.middlewares.auth.basicauth.users=admin:$2b$10$3VOxAUjOOO.9K2kRuOsYD.0CjqnMI/HBzwrSi440FgjKc6G2nGIPu"
+      - "traefik.http.middlewares.auth.basicauth.users=admin:$$2b$10$3VOxAUjOOO.9K2kRuOsYD.0CjqnMI/HBzwrSi440FgjKc6G2nGIPu"
 
 networks:
   proxy:
