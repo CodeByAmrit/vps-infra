@@ -41,7 +41,7 @@
       "gridPos": { "h": 16, "w": 24, "x": 0, "y": 6 },
       "targets": [
         {
-          "expr": "{container=~\"^/.*\"} |= ``",
+          "expr": "{container=~\".+\"}",
           "refId": "A"
         }
       ],
