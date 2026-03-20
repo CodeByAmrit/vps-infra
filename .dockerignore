@@ -1,0 +1,23 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Environment 
+.env
+.env.*
+
+# Local Volumes & Sensitive Data
+letsencrypt/
+prometheus_data/
+grafana_data/
+loki_data/
+
+# OS/Editor Files
+.DS_Store
+.idea/
+.vscode/
+
+# Documentation
+README.md
+docs/
