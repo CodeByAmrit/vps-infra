@@ -4,54 +4,61 @@
   "refresh": "5s",
   "panels": [
     {
-      "type": "stat",
-      "title": "Total Traefik Gateway Requests",
-      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 0 },
-      "targets": [
-        {
-          "expr": "sum(traefik_entrypoint_requests_total)",
-          "refId": "A"
-        }
-      ],
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto"
-      }
+      "type": "row",
+      "title": "Physical Hardware Health (Kernel)",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 }
     },
     {
-      "type": "stat",
-      "title": "Backend Connectivity Errors (5xx)",
-      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 0 },
-      "targets": [
-        {
-          "expr": "sum(traefik_service_requests_total{code=~\"5..\"}) or vector(0)",
-          "refId": "A"
-        }
-      ],
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto"
-      }
+      "type": "gauge",
+      "title": "CPU Load (All Cores)",
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 1 },
+      "targets": [{ "expr": "100 - (avg by (instance) (irate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100, "thresholds": { "mode": "absolute", "steps": [{ "value": null, "color": "green" }, { "value": 75, "color": "orange" }, { "value": 90, "color": "red" }] } } }
+    },
+    {
+      "type": "gauge",
+      "title": "Memory Used",
+      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 1 },
+      "targets": [{ "expr": "100 - ((node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100)", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100, "thresholds": { "mode": "absolute", "steps": [{ "value": null, "color": "green" }, { "value": 75, "color": "orange" }, { "value": 90, "color": "red" }] } } }
+    },
+    {
+      "type": "gauge",
+      "title": "Disk Used (Root Filesystem)",
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 1 },
+      "targets": [{ "expr": "100 - ((node_filesystem_avail_bytes{mountpoint=\"/rootfs\"} / node_filesystem_size_bytes{mountpoint=\"/rootfs\"}) * 100)", "refId": "A" }],
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100, "thresholds": { "mode": "absolute", "steps": [{ "value": null, "color": "green" }, { "value": 75, "color": "orange" }, { "value": 90, "color": "red" }] } } }
+    },
+    {
+      "type": "row",
+      "title": "Traefik Edge Gateway Traffic",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 7 }
+    },
+    {
+      "type": "timeseries",
+      "title": "Gateway Requests per Second",
+      "gridPos": { "h": 7, "w": 12, "x": 0, "y": 8 },
+      "targets": [{ "expr": "sum(rate(traefik_entrypoint_requests_total[5m]))", "refId": "A", "legendFormat": "Requests / Sec" }],
+      "fieldConfig": { "defaults": { "custom": { "fillOpacity": 20, "lineWidth": 2 } } }
+    },
+    {
+      "type": "timeseries",
+      "title": "Backend Connectivity Errors (4xx & 5xx)",
+      "gridPos": { "h": 7, "w": 12, "x": 12, "y": 8 },
+      "targets": [{ "expr": "sum(rate(traefik_service_requests_total{code=~\"[45]..\"}[5m]))", "refId": "A", "legendFormat": "Errors" }],
+      "fieldConfig": { "defaults": { "color": { "fixedColor": "red", "mode": "fixed" }, "custom": { "fillOpacity": 20, "lineWidth": 2 } } }
+    },
+    {
+      "type": "row",
+      "title": "Platform Event Streams",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 15 }
     },
     {
       "type": "logs",
-      "title": "Docker System Logs (StreamVision + Others)",
-      "gridPos": { "h": 16, "w": 24, "x": 0, "y": 6 },
-      "targets": [
-        {
-          "expr": "{container=~\".+\"}",
-          "refId": "A"
-        }
-      ],
-      "options": {
-        "showTime": true,
-        "showLabels": true,
-        "showCommonLabels": false,
-        "wrapLogMessage": true,
-        "sortOrder": "Descending"
-      }
+      "title": "Docker System Logs (StreamVision + Active Containers)",
+      "gridPos": { "h": 15, "w": 24, "x": 0, "y": 16 },
+      "targets": [{ "expr": "{container=~\".+\"}", "refId": "A" }],
+      "options": { "showTime": true, "showLabels": true, "wrapLogMessage": true, "sortOrder": "Descending" }
     }
   ],
   "schemaVersion": 38
