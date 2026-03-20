@@ -114,6 +114,7 @@ services:
 
       # Basic Auth
       - "traefik.http.middlewares.auth.basicauth.users=admin:$$2b$10$3VOxAUjOOO.9K2kRuOsYD.0CjqnMI/HBzwrSi440FgjKc6G2nGIPu"
+      - "traefik.http.middlewares.auth.basicauth.removeheader=true"
 
   prometheus:
     image: prom/prometheus:latest
