@@ -160,11 +160,19 @@ services:
     image: grafana/loki:latest
     container_name: loki
     restart: unless-stopped
+    ports:
+      - "3100:3100"
     volumes:
       - ./monitoring/loki-config.yml:/etc/loki/local-config.yaml:ro
     command: -config.file=/etc/loki/local-config.yaml
     networks:
       - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.loki.rule=Host(`loki.amritsharma.dev`)"
+      - "traefik.http.routers.loki.entrypoints=websecure"
+      - "traefik.http.routers.loki.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.loki.middlewares=auth"
 
   promtail:
     image: grafana/promtail:latest
