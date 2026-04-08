@@ -1,7 +1,7 @@
 {
   "title": "VPS & StreamVision Overview",
   "timezone": "browser",
-  "refresh": "5s",
+  "refresh": "10s",
   "schemaVersion": 38,
   "panels": [
     {
@@ -58,7 +58,7 @@
       "type": "timeseries",
       "title": "StreamVision Load (RPS)",
       "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
-      "targets": [{ "expr": "sum(rate(traefik_service_requests_total{service=~\"streamvision.*\"}[5m]))", "refId": "A", "legendFormat": "Service Load" }],
+      "targets": [{ "expr": "sum(rate(traefik_service_requests_total{service=~\".*streamvision.*\"}[5m]))", "refId": "A", "legendFormat": "Service Load" }],
       "fieldConfig": { "defaults": { "color": { "fixedColor": "blue", "mode": "fixed" }, "custom": { "fillOpacity": 20, "lineWidth": 2 } } }
     },
     {
@@ -66,8 +66,8 @@
       "title": "StreamVision Health (Success vs Failure)",
       "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
       "targets": [
-        { "expr": "sum(rate(traefik_service_requests_total{service=~\"streamvision.*\", code=~\"2..\"}[5m]))", "refId": "Success", "legendFormat": "OK" },
-        { "expr": "sum(rate(traefik_service_requests_total{service=~\"streamvision.*\", code=~\"[45]..\"}[5m]))", "refId": "Failure", "legendFormat": "Errors" }
+        { "expr": "sum(rate(traefik_service_requests_total{service=~\".*streamvision.*\", code=~\"2..\"}[5m]))", "refId": "Success", "legendFormat": "OK" },
+        { "expr": "sum(rate(traefik_service_requests_total{service=~\".*streamvision.*\", code=~\"[45]..\"}[5m]))", "refId": "Failure", "legendFormat": "Errors" }
       ],
       "fieldConfig": { "defaults": { "custom": { "fillOpacity": 20, "lineWidth": 2, "drawStyle": "bars" } } }
     },
@@ -80,21 +80,21 @@
       "type": "logs",
       "title": "StreamVision (Main App)",
       "gridPos": { "h": 12, "w": 12, "x": 0, "y": 25 },
-      "targets": [{ "expr": "{service=\"streamvision\"}", "refId": "A" }],
+      "targets": [{ "expr": "{container=~\".*streamvision.*\"}", "refId": "A" }],
       "options": { "showTime": true, "showLabels": false, "wrapLogMessage": true, "sortOrder": "Descending" }
     },
     {
       "type": "logs",
       "title": "StreamVision (HLS Server)",
       "gridPos": { "h": 12, "w": 12, "x": 12, "y": 25 },
-      "targets": [{ "expr": "{service=\"streamvision-hls\"}", "refId": "A" }],
+      "targets": [{ "expr": "{container=~\".*nginx_hls.*\"}", "refId": "A" }],
       "options": { "showTime": true, "showLabels": false, "wrapLogMessage": true, "sortOrder": "Descending" }
     },
     {
       "type": "logs",
       "title": "Student Tracker (All Replicas)",
       "gridPos": { "h": 12, "w": 24, "x": 0, "y": 37 },
-      "targets": [{ "expr": "{service=\"student-tracker\"}", "refId": "A" }],
+      "targets": [{ "expr": "{container=~\".*student-tracker.*\"}", "refId": "A" }],
       "options": { "showTime": true, "showLabels": true, "wrapLogMessage": true, "sortOrder": "Descending" }
     },
     {
@@ -106,14 +106,14 @@
       "type": "logs",
       "title": "Gateway (Traefik)",
       "gridPos": { "h": 10, "w": 8, "x": 0, "y": 50 },
-      "targets": [{ "expr": "{service=\"traefik\"}", "refId": "A" }],
+      "targets": [{ "expr": "{container=~\".*traefik.*\"}", "refId": "A" }],
       "options": { "showTime": true, "showLabels": false, "wrapLogMessage": true, "sortOrder": "Descending" }
     },
     {
       "type": "logs",
       "title": "Database & Metrics (Loki / Prometheus / Grafana)",
       "gridPos": { "h": 10, "w": 16, "x": 8, "y": 50 },
-      "targets": [{ "expr": "{service=~\"loki|prometheus|grafana\"}", "refId": "A" }],
+      "targets": [{ "expr": "{container=~\".*loki.*|.*prometheus.*|.*grafana.*\"}", "refId": "A" }],
       "options": { "showTime": true, "showLabels": true, "wrapLogMessage": true, "sortOrder": "Descending" }
     }
   ],
