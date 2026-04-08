@@ -2,6 +2,7 @@
   "title": "VPS & StreamVision Overview",
   "timezone": "browser",
   "refresh": "5s",
+  "schemaVersion": 38,
   "panels": [
     {
       "type": "row",
@@ -31,35 +32,90 @@
     },
     {
       "type": "row",
-      "title": "Traefik Edge Gateway Traffic",
+      "title": "Global Edge Traffic (Traefik)",
       "gridPos": { "h": 1, "w": 24, "x": 0, "y": 7 }
     },
     {
       "type": "timeseries",
-      "title": "Gateway Requests per Second",
+      "title": "Total Entrypoint Requests / Sec",
       "gridPos": { "h": 7, "w": 12, "x": 0, "y": 8 },
-      "targets": [{ "expr": "sum(rate(traefik_entrypoint_requests_total[5m]))", "refId": "A", "legendFormat": "Requests / Sec" }],
-      "fieldConfig": { "defaults": { "custom": { "fillOpacity": 20, "lineWidth": 2 } } }
+      "targets": [{ "expr": "sum(rate(traefik_entrypoint_requests_total[5m]))", "refId": "A", "legendFormat": "Global Load" }],
+      "fieldConfig": { "defaults": { "custom": { "fillOpacity": 20, "lineWidth": 2, "gradientMode": "opacity" } } }
     },
     {
       "type": "timeseries",
-      "title": "Backend Connectivity Errors (4xx & 5xx)",
+      "title": "Error Rates (4xx & 5xx)",
       "gridPos": { "h": 7, "w": 12, "x": 12, "y": 8 },
       "targets": [{ "expr": "sum(rate(traefik_service_requests_total{code=~\"[45]..\"}[5m]))", "refId": "A", "legendFormat": "Errors" }],
       "fieldConfig": { "defaults": { "color": { "fixedColor": "red", "mode": "fixed" }, "custom": { "fillOpacity": 20, "lineWidth": 2 } } }
     },
     {
       "type": "row",
-      "title": "Platform Event Streams",
+      "title": "🎥 StreamVision Application Insights",
       "gridPos": { "h": 1, "w": 24, "x": 0, "y": 15 }
     },
     {
+      "type": "timeseries",
+      "title": "StreamVision Load (RPS)",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "targets": [{ "expr": "sum(rate(traefik_service_requests_total{service=~\"streamvision.*\"}[5m]))", "refId": "A", "legendFormat": "Service Load" }],
+      "fieldConfig": { "defaults": { "color": { "fixedColor": "blue", "mode": "fixed" }, "custom": { "fillOpacity": 20, "lineWidth": 2 } } }
+    },
+    {
+      "type": "timeseries",
+      "title": "StreamVision Health (Success vs Failure)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "targets": [
+        { "expr": "sum(rate(traefik_service_requests_total{service=~\"streamvision.*\", code=~\"2..\"}[5m]))", "refId": "Success", "legendFormat": "OK" },
+        { "expr": "sum(rate(traefik_service_requests_total{service=~\"streamvision.*\", code=~\"[45]..\"}[5m]))", "refId": "Failure", "legendFormat": "Errors" }
+      ],
+      "fieldConfig": { "defaults": { "custom": { "fillOpacity": 20, "lineWidth": 2, "drawStyle": "bars" } } }
+    },
+    {
+      "type": "row",
+      "title": "🚀 Application Event Streams (Aggregated)",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 24 }
+    },
+    {
       "type": "logs",
-      "title": "Docker System Logs (StreamVision + Active Containers)",
-      "gridPos": { "h": 15, "w": 24, "x": 0, "y": 16 },
-      "targets": [{ "expr": "{container=~\".+\"}", "refId": "A" }],
+      "title": "StreamVision (Main App)",
+      "gridPos": { "h": 12, "w": 12, "x": 0, "y": 25 },
+      "targets": [{ "expr": "{service=\"streamvision\"}", "refId": "A" }],
+      "options": { "showTime": true, "showLabels": false, "wrapLogMessage": true, "sortOrder": "Descending" }
+    },
+    {
+      "type": "logs",
+      "title": "StreamVision (HLS Server)",
+      "gridPos": { "h": 12, "w": 12, "x": 12, "y": 25 },
+      "targets": [{ "expr": "{service=\"streamvision-hls\"}", "refId": "A" }],
+      "options": { "showTime": true, "showLabels": false, "wrapLogMessage": true, "sortOrder": "Descending" }
+    },
+    {
+      "type": "logs",
+      "title": "Student Tracker (All Replicas)",
+      "gridPos": { "h": 12, "w": 24, "x": 0, "y": 37 },
+      "targets": [{ "expr": "{service=\"student-tracker\"}", "refId": "A" }],
+      "options": { "showTime": true, "showLabels": true, "wrapLogMessage": true, "sortOrder": "Descending" }
+    },
+    {
+      "type": "row",
+      "title": "🛠️ Core Infrastructure Events",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 49 }
+    },
+    {
+      "type": "logs",
+      "title": "Gateway (Traefik)",
+      "gridPos": { "h": 10, "w": 8, "x": 0, "y": 50 },
+      "targets": [{ "expr": "{service=\"traefik\"}", "refId": "A" }],
+      "options": { "showTime": true, "showLabels": false, "wrapLogMessage": true, "sortOrder": "Descending" }
+    },
+    {
+      "type": "logs",
+      "title": "Database & Metrics (Loki / Prometheus / Grafana)",
+      "gridPos": { "h": 10, "w": 16, "x": 8, "y": 50 },
+      "targets": [{ "expr": "{service=~\"loki|prometheus|grafana\"}", "refId": "A" }],
       "options": { "showTime": true, "showLabels": true, "wrapLogMessage": true, "sortOrder": "Descending" }
     }
   ],
-  "schemaVersion": 38
+  "description": "Unified VPS Health and Application performance monitoring"
 }

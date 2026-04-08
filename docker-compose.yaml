@@ -115,6 +115,7 @@ services:
       # Basic Auth
       - "traefik.http.middlewares.auth.basicauth.users=admin:$$2b$10$3VOxAUjOOO.9K2kRuOsYD.0CjqnMI/HBzwrSi440FgjKc6G2nGIPu"
       - "traefik.http.middlewares.auth.basicauth.removeheader=true"
+      - "logging.service=traefik"
 
   prometheus:
     image: prom/prometheus:latest
@@ -139,6 +140,7 @@ services:
       - "traefik.http.routers.prometheus.entrypoints=websecure"
       - "traefik.http.routers.prometheus.tls.certresolver=letsencrypt"
       - "traefik.http.routers.prometheus.middlewares=auth"
+      - "logging.service=prometheus"
 
   node-exporter:
     image: prom/node-exporter:latest
@@ -174,6 +176,7 @@ services:
       - "traefik.http.routers.loki.tls.certresolver=letsencrypt"
       - "traefik.http.routers.loki.middlewares=auth"
       - "traefik.http.services.loki.loadbalancer.server.port=3100"
+      - "logging.service=loki"
 
   promtail:
     image: grafana/promtail:latest
@@ -210,6 +213,7 @@ services:
       - "traefik.http.routers.grafana.entrypoints=websecure"
       - "traefik.http.routers.grafana.tls.certresolver=letsencrypt"
       - "traefik.http.routers.grafana.middlewares=auth"
+      - "logging.service=grafana"
 
 networks:
   proxy:
