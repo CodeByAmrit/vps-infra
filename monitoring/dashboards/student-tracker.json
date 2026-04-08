@@ -25,7 +25,7 @@
       "datasource": { "type": "loki", "uid": "loki" },
       "targets": [
         {
-          "expr": "sum(count_over_time({container=\"student-tracker\"}[1h]))",
+          "expr": "sum(count_over_time({container=~\".*student-tracker.*\"}[1h]))",
           "refId": "A"
         }
       ],
@@ -50,7 +50,7 @@
       "datasource": { "type": "loki", "uid": "loki" },
       "targets": [
         {
-          "expr": "sum(count_over_time({container=\"student-tracker\"} |~ \" [45][0-9]{2} \" [1h]))",
+          "expr": "sum(count_over_time({container=~\".*student-tracker.*\"} |~ \" [45][0-9]{2} \" [1h]))",
           "refId": "A"
         }
       ],
@@ -83,7 +83,7 @@
       "datasource": { "type": "loki", "uid": "loki" },
       "targets": [
         {
-          "expr": "sum(count_over_time({container=\"student-tracker\"} |~ \"(?i)(error|warn|exception|fail)\" [1h]))",
+          "expr": "sum(count_over_time({container=~\".*student-tracker.*\"} |~ \"(?i)(error|warn|exception|fail)\" [1h]))",
           "refId": "A"
         }
       ],
@@ -320,17 +320,17 @@
       "datasource": { "type": "loki", "uid": "loki" },
       "targets": [
         {
-          "expr": "sum(rate({container=\"student-tracker\"} |~ \"(?i)(error|exception|fatal|fail)\" [1m]))",
+          "expr": "sum(rate({container=~\".*student-tracker.*\"} |~ \"(?i)(error|exception|fatal|fail)\" [1m]))",
           "refId": "A",
           "legendFormat": "Errors"
         },
         {
-          "expr": "sum(rate({container=\"student-tracker\"} |~ \"(?i)warn\" [1m]))",
+          "expr": "sum(rate({container=~\".*student-tracker.*\"} |~ \"(?i)warn\" [1m]))",
           "refId": "B",
           "legendFormat": "Warnings"
         },
         {
-          "expr": "sum(rate({container=\"student-tracker\"} |~ \"GET |POST |PUT |DELETE |PATCH \" [1m]))",
+          "expr": "sum(rate({container=~\".*student-tracker.*\"} |~ \"GET |POST |PUT |DELETE |PATCH \" [1m]))",
           "refId": "C",
           "legendFormat": "HTTP Requests"
         }
@@ -378,7 +378,7 @@
       "datasource": { "type": "loki", "uid": "loki" },
       "targets": [
         {
-          "expr": "{container=\"student-tracker\"} |~ \"(?i)(error|exception|fatal|fail|uncaught|ER_|ECONNREFUSED)\"",
+          "expr": "{container=~\".*student-tracker.*\"} |~ \"(?i)(error|exception|fatal|fail|uncaught|ER_|ECONNREFUSED)\"",
           "refId": "A"
         }
       ],
@@ -399,7 +399,7 @@
       "datasource": { "type": "loki", "uid": "loki" },
       "targets": [
         {
-          "expr": "{container=\"student-tracker\"} |~ \"(?i)(warn|deprecated|timeout|slow)\"",
+          "expr": "{container=~\".*student-tracker.*\"} |~ \"(?i)(warn|deprecated|timeout|slow)\"",
           "refId": "A"
         }
       ],
@@ -418,7 +418,7 @@
       "title": "📥 All Logs — Real-time Stream",
       "gridPos": { "h": 16, "w": 24, "x": 0, "y": 33 },
       "datasource": { "type": "loki", "uid": "loki" },
-      "targets": [{ "expr": "{container=\"student-tracker\"}", "refId": "A" }],
+      "targets": [{ "expr": "{container=~\".*student-tracker.*\"}", "refId": "A" }],
       "options": {
         "showTime": true,
         "showLabels": true,
@@ -444,7 +444,7 @@
       "datasource": { "type": "loki", "uid": "loki" },
       "targets": [
         {
-          "expr": "{container=\"student-tracker\"} |~ \" 4[0-9]{2} \"",
+          "expr": "{container=~\".*student-tracker.*\"} |~ \" 4[0-9]{2} \"",
           "refId": "A"
         }
       ],
@@ -464,7 +464,7 @@
       "datasource": { "type": "loki", "uid": "loki" },
       "targets": [
         {
-          "expr": "{container=\"student-tracker\"} |~ \" 5[0-9]{2} \"",
+          "expr": "{container=~\".*student-tracker.*\"} |~ \" 5[0-9]{2} \"",
           "refId": "A"
         }
       ],
@@ -492,7 +492,7 @@
       "datasource": { "type": "loki", "uid": "loki" },
       "targets": [
         {
-          "expr": "{container=\"student-tracker\"} |~ \"(?i)(mysql|sql|ER_|query error|pool|ECONNREFUSED)\"",
+          "expr": "{container=~\".*student-tracker.*\"} |~ \"(?i)(mysql|sql|ER_|query error|pool|ECONNREFUSED)\"",
           "refId": "A"
         }
       ],
@@ -512,7 +512,7 @@
       "datasource": { "type": "loki", "uid": "loki" },
       "targets": [
         {
-          "expr": "{container=\"student-tracker\"} |~ \"(?i)(login|logout|auth|token|jwt|session|INVALID_CREDENTIALS)\"",
+          "expr": "{container=~\".*student-tracker.*\"} |~ \"(?i)(login|logout|auth|token|jwt|session|INVALID_CREDENTIALS)\"",
           "refId": "A"
         }
       ],
@@ -540,7 +540,7 @@
       "datasource": { "type": "loki", "uid": "loki" },
       "targets": [
         {
-          "expr": "{container=\"student-tracker\"} |~ \"(?i)(start|listen|shutdown|restart|SIGINT|SIGTERM|closing|pool|ready|running on)\"",
+          "expr": "{container=~\".*student-tracker.*\"} |~ \"(?i)(start|listen|shutdown|restart|SIGINT|SIGTERM|closing|pool|ready|running on)\"",
           "refId": "A"
         }
       ],
